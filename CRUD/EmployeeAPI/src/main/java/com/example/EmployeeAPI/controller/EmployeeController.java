@@ -3,6 +3,7 @@ package com.example.EmployeeAPI.controller;
 import com.example.EmployeeAPI.dtos.EmployeeRequestDto;
 import com.example.EmployeeAPI.dtos.EmployeeResponseDto;
 import com.example.EmployeeAPI.dtos.EmployeeUpdateRequestDto;
+import com.example.EmployeeAPI.dtos.PaginatedResponse;
 import com.example.EmployeeAPI.exception.ApiResponse;
 import com.example.EmployeeAPI.repository.EmployeeRepository;
 import com.example.EmployeeAPI.service.EmployeeService;
@@ -29,6 +30,14 @@ public class EmployeeController {
     @GetMapping
     public ApiResponse<List<EmployeeResponseDto>> findAll() {
         return ApiResponse.ok("Find all employees", employeeService.findAll());
+    }
+
+    @GetMapping("/paging")
+    public ApiResponse<PaginatedResponse<EmployeeResponseDto>> findAllPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "4") int size) {
+        return ApiResponse.ok("Find all employees with pagination", 
+                employeeService.findAllPaginated(page, size));
     }
 
     @GetMapping("/{id}")

@@ -3,11 +3,15 @@ package com.example.EmployeeAPI.service.iml;
 import com.example.EmployeeAPI.dtos.EmployeeRequestDto;
 import com.example.EmployeeAPI.dtos.EmployeeResponseDto;
 import com.example.EmployeeAPI.dtos.EmployeeUpdateRequestDto;
+import com.example.EmployeeAPI.dtos.PaginatedResponse;
 import com.example.EmployeeAPI.entities.EmployeeEntity;
 import com.example.EmployeeAPI.repository.EmployeeRepository;
 import com.example.EmployeeAPI.service.EmployeeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +48,17 @@ public class EmployeeServiceIml implements EmployeeService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public PaginatedResponse<EmployeeResponseDto> findAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<EmployeeEntity> employeePage = employeeRepository.findAll(pageable);
+        
+        Page<EmployeeResponseDto> responsePage = employeePage.map(this::toResponse);
+        
+        return PaginatedResponse.fromPage(responsePage);
     }
 
     @Override
