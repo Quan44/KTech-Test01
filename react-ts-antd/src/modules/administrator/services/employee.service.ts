@@ -1,8 +1,6 @@
 import type { Employee, EmployeeResponse } from '../types/employee';
 import axios from 'axios';
 
-// Tạo axios instance cho employee API
-// Sử dụng proxy từ Vite config để tránh CORS error
 const employeeApi = axios.create({
     baseURL: '/api/v1',
     headers: {
@@ -13,7 +11,6 @@ const employeeApi = axios.create({
 // Hàm get danh sách employee với phân trang
 export const fetchEmployees = async (page: number, size: number = 4): Promise<EmployeeResponse> => {
   try {
-    // Backend sử dụng zero-based indexing (0, 1, 2...)
     const response = await employeeApi.get(`/employees/paging?page=${page}&size=${size}`);
     return response.data.data;
   } catch (error) {

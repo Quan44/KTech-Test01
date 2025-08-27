@@ -5,7 +5,6 @@ import com.example.EmployeeAPI.dtos.EmployeeResponseDto;
 import com.example.EmployeeAPI.dtos.EmployeeUpdateRequestDto;
 import com.example.EmployeeAPI.dtos.PaginatedResponse;
 import com.example.EmployeeAPI.exception.ApiResponse;
-import com.example.EmployeeAPI.repository.EmployeeRepository;
 import com.example.EmployeeAPI.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
