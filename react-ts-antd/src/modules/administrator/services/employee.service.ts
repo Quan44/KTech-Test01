@@ -31,27 +31,14 @@ export const deleteEmployee = async (id: number): Promise<void> => {
 
 // Hàm cập nhật employee
 export const updateEmployee = async (employee: Employee): Promise<Employee> => {
-  try {
-    const { id, ...payload } = employee;
-    
-    const response = await fetch(`http://localhost:8080/api/v1/employees/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+        const { id, ...payload } = employee;
+        const response = await employeeApi.patch(`/employees/${id}`, payload);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating employee:', error);
+        throw new Error('Failed to update employee');
     }
-    
-    const data = await response.json();
-    return data;
-  } catch (error: unknown) {
-    console.error('Error updating employee:', error);
-    throw new Error('Failed to update employee');
-  }
 };
 
 // Hàm tạo mới employee

@@ -1,6 +1,7 @@
-import { Table, Pagination, Card, Button, Spin } from 'antd';
+import { Table, Pagination, Card, Button, Spin, Space } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { Employee } from '../types/employee';
+import { ReloadOutlined } from '@ant-design/icons';
 import React from 'react';
 
 interface EmployeeTableProps {
@@ -11,6 +12,7 @@ interface EmployeeTableProps {
     total: number;
     onPageChange: (page: number, pageSize: number) => void;
     onAddClick: () => void;
+    onRefresh: () => void;
 }
 
 const EmployeeTable: React.FC<EmployeeTableProps> = ({
@@ -21,14 +23,24 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
     total,
     onPageChange,
     onAddClick,
+    onRefresh,
 }) => {
     return (
         <Card
             title="Employee List"
             extra={
-                <Button type="primary" onClick={onAddClick}>
-                    Thêm mới
-                </Button>
+                <Space>
+                    <Button 
+                        icon={<ReloadOutlined />} 
+                        onClick={onRefresh}
+                        title="Refresh dữ liệu"
+                    >
+                        Refresh
+                    </Button>
+                    <Button type="primary" onClick={onAddClick}>
+                        Thêm mới
+                    </Button>
+                </Space>
             }
         >
             {loading ? (

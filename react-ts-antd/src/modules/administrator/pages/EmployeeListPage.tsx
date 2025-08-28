@@ -54,9 +54,21 @@ const EmployeeListPage = () => {
     //=========================== FETCH DELETE =================================//
     const deleteMutation = useMutation({
         mutationFn: deleteEmployee,
-        onSuccess: () => {
+        onSuccess: (_, deletedId) => {
             msgSuccess('Xóa Employee thành công !');
-            queryClient.invalidateQueries({ queryKey: ['employees', int_page] });
+            // Optimistic update: xóa item khỏi cache mà không refetch
+            queryClient.setQueryData(['employees', int_page], (oldData: unknown) => {
+                if (!oldData || typeof oldData !== 'object') return oldData;
+                const data = oldData as { data: Employee[]; pagination: { totalElements: number; [key: string]: unknown } };
+                return {
+                    ...data,
+                    data: data.data.filter((employee: Employee) => employee.id !== deletedId),
+                    pagination: {
+                        ...data.pagination,
+                        totalElements: data.pagination.totalElements - 1
+                    }
+                };
+            });
         },
         onError: (err) => {
             console.log('Xóa có lỗi !', err);
@@ -64,12 +76,19 @@ const EmployeeListPage = () => {
         },
     });
 
+    // Hàm refresh dữ liệu
+    const handleRefresh = () => {
+        queryClient.invalidateQueries({ queryKey: ['employees', int_page] });
+        msgSuccess('Đã refresh dữ liệu !');
+    };
+
     //=========================== FETCH UPDATE =================================//
     const updateMutation = useMutation({
         mutationFn: updateEmployee,
         onSuccess: () => {
             msgSuccess('Cập nhật thành công !');
-            queryClient.invalidateQueries({ queryKey: ['employees', int_page] });
+            // Invalidate tất cả các trang employees để đảm bảo data đồng bộ
+            queryClient.invalidateQueries({ queryKey: ['employees'] });
             setEditFormVisible(false);
         },
         onError: (err) => {
@@ -95,7 +114,8 @@ const EmployeeListPage = () => {
             console.log('addMutation onSuccess', data);
             setCreateFormVisible(false);
             msgSuccess('Thêm mới thành công !');
-            queryClient.invalidateQueries({ queryKey: ['employees', int_page] });
+            // Invalidate tất cả các trang employees để đảm bảo data đồng bộ
+            queryClient.invalidateQueries({ queryKey: ['employees'] });
             createForm.resetFields();
         },
         onError: (err) => {
@@ -246,6 +266,7 @@ const EmployeeListPage = () => {
                 total={data?.pagination?.totalElements || 0}
                 onPageChange={onChange}
                 onAddClick={() => setCreateFormVisible(true)}
+                onRefresh={handleRefresh}
             />
             <EmployeeEdit
                 visible={editFormVisible}
